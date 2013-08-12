@@ -3,7 +3,7 @@ require 'formula'
 class DatomicFree < Formula
   homepage ''
   url 'http://downloads.datomic.com/0.8.4122/datomic-free-0.8.4122.zip'
-  sha1 '284466c5e1b8e843433f71260b81127d3a9fa464'
+  sha1 '83d13aa53d6d2ab3d61efed02b233ed19f695b34'
 
   def install
     prefix.install Dir['*']
