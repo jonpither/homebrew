@@ -1,28 +1,26 @@
-require 'macos/version'
+require 'os/mac/version'
+require 'hardware'
 
 module MacOS extend self
 
   # This can be compared to numerics, strings, or symbols
   # using the standard Ruby Comparable methods.
   def version
-    Version.new(MACOS_VERSION)
+    @version ||= Version.new(MACOS_VERSION)
   end
 
   def cat
-    if version == :mountain_lion then :mountain_lion
-    elsif version == :lion then :lion
-    elsif version == :snow_leopard
-      Hardware.is_64_bit? ? :snow_leopard : :snow_leopard_32
-    elsif version == :leopard then :leopard
-    else nil
+    case MacOS.version
+    when 10.8 then :mountain_lion
+    when 10.7 then :lion
+    when 10.6 then :snow_leopard
+    when 10.5 then :leopard
+    when 10.4 then :tiger
     end
   end
 
-  # TODO: Can be removed when all bottles migrated to underscored cat symbols.
-  def cat_without_underscores
-    possibly_underscored_cat = cat
-    return nil unless possibly_underscored_cat
-    cat.to_s.gsub('_', '').to_sym
+  def pretty_name
+    cat.to_s.split('_').map(&:capitalize).join(' ')
   end
 
   def locate tool
@@ -118,6 +116,7 @@ module MacOS extend self
       $1.to_i
     end
   end
+  alias_method :gcc_4_0_build_version, :gcc_40_build_version
 
   def gcc_42_build_version
     @gcc_42_build_version ||= if locate("gcc-4.2") \
@@ -126,6 +125,7 @@ module MacOS extend self
       $1.to_i
     end
   end
+  alias_method :gcc_build_version, :gcc_42_build_version
 
   def llvm_build_version
     # for Xcode 3 on OS X 10.5 this will not exist
@@ -204,6 +204,9 @@ module MacOS extend self
     "4.5.1" => { :llvm_build => 2336, :clang => "4.1", :clang_build => 421 },
     "4.5.2" => { :llvm_build => 2336, :clang => "4.1", :clang_build => 421 },
     "4.6"   => { :llvm_build => 2336, :clang => "4.2", :clang_build => 425 },
+    "4.6.1" => { :llvm_build => 2336, :clang => "4.2", :clang_build => 425 },
+    "4.6.2" => { :llvm_build => 2336, :clang => "4.2", :clang_build => 425 },
+    "5.0"   => { :clang => "5.0", :clang_build => 500 },
   }
 
   def compilers_standard?
@@ -227,6 +230,7 @@ module MacOS extend self
   end
 
   def mdfind id
+    return [] unless MACOS
     (@mdfind ||= {}).fetch(id.to_s) do
       @mdfind[id.to_s] = `/usr/bin/mdfind "kMDItemCFBundleIdentifier == '#{id}'"`.split("\n")
     end
@@ -237,5 +241,5 @@ module MacOS extend self
   end
 end
 
-require 'macos/xcode'
-require 'macos/xquartz'
+require 'os/mac/xcode'
+require 'os/mac/xquartz'
