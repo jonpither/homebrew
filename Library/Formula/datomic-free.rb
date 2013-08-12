@@ -1,8 +1,8 @@
 require 'formula'
 
-class Datomic < Formula
+class DatomicFree < Formula
   homepage ''
-  url 'http://downloads.datomic.com/0.8.3826/datomic-free-0.8.3826.zip'
+  url 'http://downloads.datomic.com/0.8.4122/datomic-free-0.8.4122.zip'
   sha1 '284466c5e1b8e843433f71260b81127d3a9fa464'
 
   def install
